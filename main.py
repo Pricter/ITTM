@@ -10,5 +10,14 @@ def getInput():
     return [command, args]
 
 
+def parse(command, args):
+    if(command == "exit"):
+        if(len(args) == 0):
+            exit()
+        elif(len(args) > 0):
+            print("[ ERROR ]: Too many arguments for `exit` command.")
+
+
 while True:
-    print(getInput())
+    inputU = getInput()
+    parse(inputU[0], inputU[1])
