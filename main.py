@@ -1,5 +1,6 @@
 import json
 import urllib.request
+import os
 
 
 class colors:
@@ -71,10 +72,32 @@ def parse(command, args):
             print(
                 f"\n{colors.fg.red}[ ERROR ]: Too many arguments for `exit` command.{colors.reset}")
     elif(command == "listTools"):
-        tools = [x for x in getTools()]
-        print("\n\t[ TOOLS ]: Available Tools:")
-        for i in range(len(tools)):
-            print(f"\t\t{tools[i]}")
+        if(len(args) > 1):
+            print(
+                f"\n{colors.fg.red}[ ERROR ]: Too many arguments for `listTools` command.{colors.reset}")
+            return None
+        if(len(args) == 0):
+            tools = [x for x in getTools()]
+            print("\n\t[ TOOLS ]: Available Tools:")
+            for i in range(len(tools)):
+                print(f"\t\t{tools[i]}")
+        if(len(args) == 1):
+            if(args[0] == "-i" or "-installed"):
+                if(os.path.isfile("toollist.txt") == False):
+                    print(
+                        f"\n{colors.fg.blue}[ INFO ]: No tools currently installed.{colors.reset}")
+                else:
+                    print(
+                        f"\n{colors.fg.blue}[ INFO ]: Current installed tool list:{colors.reset}")
+                    with open("toollist.txt", "r") as f:
+                        raw = f.readlines()
+                        for i in range(len(raw)):
+                            print("\t" + raw[i], end="")
+                    f.close()
+                    print()
+            else:
+                print(
+                    f"\n{colors.fg.red}[ ERROR ]: Unknown argument `{args[0]}`.{colors.reset}")
     else:
         print(
             f"\n{colors.fg.red}[ ERROR ]: Unknown command, Please use valid commands.{colors.reset}")
