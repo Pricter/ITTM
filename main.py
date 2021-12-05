@@ -1,5 +1,6 @@
 import json
 import urllib.request
+import urllib.error
 import os
 import platform
 import errno
@@ -72,6 +73,9 @@ def log(log, cmd='null', aList=[]):
         cprint("Unknown command, Please use valid commands", codes.err)
     elif(log) == "key":
         cprint("You are pressing a key combination. Using key combinations for terminal may result in unwanted results", codes.key)
+    elif(log) == "unableFetch":
+        cprint(
+            "Unable to fetch the specified file, might be an internet issue", codes.err)
     else:
         cprint(f"INTERNAL ERROR, UNKNOWN CODE: {cmd}", codes.err)
 
@@ -92,9 +96,16 @@ elif(system == "linux"):
     mainPath = "/usr/toolbox/"
 
 
-def getTools():
-    raw = urllib.request.urlopen(
-        "https://raw.githubusercontent.com/Indie-Toolbox/Indie-Toolbox/main/tools.json").read()
+def getTools(isCheck=False):
+    try:
+        raw = urllib.request.urlopen(
+            "https://raw.githubusercontent.com/Indie-Toolbox/Indie-Toolbox/main/tools.json").read()
+    except Exception as exc:
+        if isCheck == True:
+            log("unableFetch")
+            return None
+        else:
+            return None
     data = json.loads(raw)
     tools = {}
     for i in range(len(data)):
@@ -133,7 +144,10 @@ def parse(command, args):
             log("tArgs", "listTools")
             return None
         if(len(args) == 0):
-            tools = [x for x in getTools()]
+            try:
+                tools = [x for x in getTools()]
+            except:
+                return None
             log("availT")
             for i in range(len(tools)):
                 print(f"\t\t{tools[i]}")
@@ -166,8 +180,14 @@ def parse(command, args):
                     if(raw[i] == args[0]):
 
                         return None
-        raw = getTools()
-        tools = [x for x in getTools()]
+        try:
+            raw = getTools()
+        except:
+            return None
+        try:
+            tools = [x for x in getTools(True)]
+        except:
+            return None
         isThere = False
         for i in range(len(tools)):
             if tools[i] == args[0]:
