@@ -26,7 +26,7 @@ def cprint(text, code):
     if(code == codes.key):
         console.print(f"[ KEY ]: {text}\n", style="green")
     if(code == codes.info):
-        console.print(f"[ INFO ]: {text}\n", style="blue")
+        console.print(f"\n[ INFO ]: {text}", style="blue")
     if(code == codes.inst):
         console.print(f"\t[ INSTALL ]: {text}\n", style="yellow")
     if(code == codes.tool):
@@ -45,7 +45,7 @@ def log(log, cmd='null', aList=[]):
     elif(log) == "nToolsIns":
         cprint("No tools currently installed", codes.info)
     elif(log) == "availInsTools":
-        cprint("\nCurrent installed tool list:", codes.info)
+        cprint("Current installed tool list:", codes.info)
     elif(log) == "unknownArg":
         cprint(f"Unknown argument `{aList[0]}`", codes.err)
     elif(log) == "nArgs":
@@ -159,8 +159,10 @@ def parse(command, args):
                     log("availInsTools")
                     with open(toollistPath, "r") as f:
                         raw = f.readlines()
+                        tools = []
                         for i in range(len(raw)):
-                            print("\t" + raw[i], end="")
+                            tool = raw[i].split(":")
+                            print(f"\t{tool[0]}: {tool[1]}", end="")
                     f.close()
                     print()
             else:
@@ -176,9 +178,12 @@ def parse(command, args):
         if(os.path.isfile(toollistPath) == True):
             with open(toollistPath, "r") as f:
                 raw = f.readlines()
+                tools = []
                 for i in range(len(raw)):
-                    if(raw[i] == args[0]):
-
+                    tool = raw[i].split(":")
+                    tools.append(tool[0])
+                for i in range(len(tools)):
+                    if(tools[i] == args[0]):
                         return None
         try:
             raw = getTools()
@@ -271,7 +276,10 @@ def parse(command, args):
             if exc == errno.EEXIST:
                 pass
         with open(toollistPath, "a") as f:
-            f.write(f"\n{args[0]}")
+            if(len(args) == 1):
+                f.write(f"{args[0]}:{raw[args[0]]['version']}\n")
+            else:
+                f.write(f"{args[0]}:{args[2]}\n")
         f.close()
     elif(command == "clear"):
         os.system('cls' if os.name == 'nt' else 'clear')
