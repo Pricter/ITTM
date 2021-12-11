@@ -8,9 +8,6 @@ import subprocess
 import platform
 import json
 import urllib.request
-import ctypes
-
-ctypes.windll.kernel32.SetConsoleTitleW("ITTM")
 
 toollistPath = ""
 mainPath = ""
