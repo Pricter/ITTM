@@ -65,7 +65,7 @@ def log(log, cmd='null', aList=[], custom=""):
     elif(log) == "gettingFile":
         cprint("Getting release file, this may take some time", codes.inst)
     elif(log) == "tooManyArgs":
-        cprint(f"Too many arguments for `{cmd}` command", codes.err)
+        cprint(f"Too many arguments", codes.err)
     elif(log) == "availableTools":
         cprint("Available Tools:", codes.info)
     elif(log) == "noToolsInstalled":
@@ -73,7 +73,7 @@ def log(log, cmd='null', aList=[], custom=""):
     elif(log) == "availableInstalledTools":
         cprint("Current installed tool list:", codes.info)
     elif(log) == "notEnoughArgs":
-        cprint(f"Not enough arguments for `{cmd}` command", codes.err)
+        cprint(f"Not enough arguments", codes.err)
     elif(log) == "toolNotFoundInJson":
         cprint(
             f"`{aList[0]}` was not found in the main list of tools", codes.err)
