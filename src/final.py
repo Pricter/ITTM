@@ -278,6 +278,10 @@ class ittm:
                             f"{self.ToolListJSON[args[0]]['git']}/releases/download/{args[2]}/{self.ToolListJSON[args[0]]['file'][platform.system()]}", os.path.join(mainPath, args[0], self.ToolListJSON[args[0]]['file'][platform.system()]))
                         self.ITools.append(args[0])
                         self.IToolsVersionSpecification[args[0]] = args[2]
+                        if len(self.ToolListJSON[args[0]]["install"]) > 0:
+                            for i in range(len(self.ToolListJSON[args[0]]["install"])):
+                                print("[ INFO ] Running install script: " + self.ToolListJSON[args[0]]["install"][i])
+                                subprocess.run(self.ToolListJSON[args[0]]["install"][i], shell=True)
                     else:
                         log("MacOS supported but not fully implemented until there is atleast one tool that supports mac.", "error")
                         exit()
@@ -287,10 +291,14 @@ class ittm:
                 if(system == "windows" or system == "linux"):
                     self.getFile(
                             f"{self.ToolListJSON[args[0]]['git']}/releases/download/{self.ToolListJSON[args[0]]['version']}/{self.ToolListJSON[args[0]]['file'][platform.system()]}", os.path.join(mainPath, args[0], self.ToolListJSON[args[0]]['file'][platform.system()]))
+                    if len(self.ToolListJSON[args[0]]["install"]) > 0:
+                        for i in range(len(self.ToolListJSON[args[0]]["install"])):
+                            print("[ INFO ] Running install script: " + self.ToolListJSON[args[0]]["install"][i])
+                            subprocess.run(self.ToolListJSON[args[0]]["install"][i], shell=True)
                     self.ITools.append(args[0])
                     self.IToolsVersionSpecification[args[0]] = self.ToolListJSON[args[0]]['version']
             else:
-                print("Invalid number of arguments.", "error")
+                log("Invalid number of arguments.", "error")
             try:
                 f = open(toollistPath, "x")
                 f.close()
