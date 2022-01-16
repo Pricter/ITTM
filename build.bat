@@ -1,0 +1,1 @@
+pyinstaller --noconfirm --onefile --console --icon "C:/dev/ITTM/Toolbox.ico"  "C:/dev/ITTM/src/final.py"
