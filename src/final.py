@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from rich.console import Console
 import os
 import errno
@@ -9,6 +10,9 @@ import platform
 import json
 import urllib.request
 from tqdm import tqdm
+import warnings
+
+warnings.simplefilter("ignore")
 
 toollistPath: str = ""
 mainPath: str = ""
@@ -82,7 +86,7 @@ class ittm:
         tools = {}
         for i in range(len(data)):
             tools[f"{data[i]['name']}"] = {"version": data[i]["version"], "title": data[i]["title"], "description": data[i]
-                                        ["description"], "git": data[i]["git"], "supportedPlatforms": [x for x in data[i]["supportedPlatforms"]], "run": data[i]["run"], "file": data[i]["file"]}
+                                        ["description"], "git": data[i]["git"], "supportedPlatforms": [x for x in data[i]["supportedPlatforms"]], "install": data[i]["install"], "run": data[i]["run"], "file": data[i]["file"]}
         return tools
     
     def getCache(self) -> None:
@@ -275,8 +279,12 @@ class ittm:
                         self.ITools.append(args[0])
                         self.IToolsVersionSpecification[args[0]] = args[2]
                         if len(self.ToolListJSON[args[0]]["install"]) > 0:
+                            scripts = self.ToolListJSON[args[0]]["install"]
+                            systems = list(scripts.keys())
                             for i in range(len(self.ToolListJSON[args[0]]["install"])):
-                                print("[ INFO ] Running install script: " + self.ToolListJSON[args[0]]["install"][i])
+                                if systems[i] == "" or systems[i] != system or scripts[systems[i]] == []:
+                                    pass
+                                print("[ INFO ] Running install script: " + scripts[systems[i]])
                                 subprocess.run(self.ToolListJSON[args[0]]["install"][i], shell=True)
                     else:
                         log("MacOS supported but not fully implemented until there is atleast one tool that supports mac.", "error")
@@ -288,11 +296,14 @@ class ittm:
                     self.getFile(
                             f"{self.ToolListJSON[args[0]]['git']}/releases/download/{self.ToolListJSON[args[0]]['version']}/{self.ToolListJSON[args[0]]['file'][platform.system()]}", os.path.join(mainPath, args[0], self.ToolListJSON[args[0]]['file'][platform.system()]))
                     if len(self.ToolListJSON[args[0]]["install"]) > 0:
-                        for i in range(len(self.ToolListJSON[args[0]]["install"])):
-                            print("[ INFO ] Running install script: " + self.ToolListJSON[args[0]]["install"][i])
-                            subprocess.run(self.ToolListJSON[args[0]]["install"][i], shell=True)
+                        for i in range(len(self.ToolListJSON[args[0]]["install"][f"{system.capitalize()}"])):
+                            print("[ INFO ] Running install script: " + self.ToolListJSON[args[0]]["install"][f"{system.capitalize()}"][i])
+                            subprocess.run(self.ToolListJSON[args[0]]["install"][f"{system.capitalize()}"][i], shell=True)
                     self.ITools.append(args[0])
                     self.IToolsVersionSpecification[args[0]] = self.ToolListJSON[args[0]]['version']
+                else:
+                    log("MacOS supported but not fully implemented until there is atleast one tool that supports mac.", "error")
+                    exit()
             else:
                 log("Invalid number of arguments.", "error")
             try:
@@ -327,6 +338,9 @@ class ittm:
                     return None
         elif(command == "run"):
             if self.checkArgs(args, 1, 1) == False:
+                return None
+            if not self.isToolInstalled(args[0]):
+                log("The specified tool is not installed.", "error")
                 return None
             if(system == "windows"):
                 raw = self.ToolListJSON[args[0]]['run']['Windows']
