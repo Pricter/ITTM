@@ -253,7 +253,7 @@ class ittm:
                 log("The specified tool was not found in the main json list.", "error")
                 return None
             try:
-                os.makedirs(os.path.join(mainPath, args[0]))
+                os.makedirs(os.path.join(mainPath, args[0].lower()))
             except OSError as exc:
                 if exc == errno.EEXIST:
                     log("The folder in which the tool is supposed to be in is already occupied.", "error")
@@ -268,10 +268,6 @@ class ittm:
                         f"{self.ToolListJSON[args[0]]['git']}/releases/download/{args[2]}/{self.ToolListJSON[args[0]]['file']['Windows']}",os.path.join(mainPath, args[0], self.ToolListJSON[args[0]]['file'][platform.system()]))
                     if(response.status_code != 200):
                         log("The specified version does not exist.", "error")
-                        try:
-                            shutil.rmtree(mainPath)
-                        except:
-                            log(f"Could not delete foldet unpon failure, use `purge -a` toreset ittm or delete the `{args[0]}` folder from`C:\\toolbox\\`. This may be a permission error.")
                         return None
                     if((system == "windows") or (system == "linux")):
                         self.getFile(
